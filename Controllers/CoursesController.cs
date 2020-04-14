@@ -29,7 +29,7 @@ namespace FacultyMVC.Controllers
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                courses = courses.Where(s => s.Title.Contains(searchString));
+                courses = courses.Where(s => s.Title.ToLower().Contains(searchString.ToLower()));
             }
 
             //eager loading
@@ -86,8 +86,8 @@ namespace FacultyMVC.Controllers
         // GET: Courses/Create
         public IActionResult Create()
         {
-            ViewData["FirstTeacherId"] = new SelectList(_context.Teacher, "Id", "FirstName");
-            ViewData["SecondTeacherId"] = new SelectList(_context.Teacher, "Id", "FirstName");
+            ViewData["FirstTeacherId"] = new SelectList(_context.Teacher, "Id", "FullName");
+            ViewData["SecondTeacherId"] = new SelectList(_context.Teacher, "Id", "FullName");
             return View();
         }
 
@@ -104,8 +104,8 @@ namespace FacultyMVC.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["FirstTeacherId"] = new SelectList(_context.Teacher, "Id", "FirstName", course.FirstTeacherId);
-            ViewData["SecondTeacherId"] = new SelectList(_context.Teacher, "Id", "FirstName", course.SecondTeacherId);
+            ViewData["FirstTeacherId"] = new SelectList(_context.Teacher, "Id", "FullName", course.FirstTeacherId);
+            ViewData["SecondTeacherId"] = new SelectList(_context.Teacher, "Id", "FullName", course.SecondTeacherId);
             return View(course);
         }
 
@@ -122,8 +122,8 @@ namespace FacultyMVC.Controllers
             {
                 return NotFound();
             }
-            ViewData["FirstTeacherId"] = new SelectList(_context.Teacher, "Id", "FirstName", course.FirstTeacherId);
-            ViewData["SecondTeacherId"] = new SelectList(_context.Teacher, "Id", "FirstName", course.SecondTeacherId);
+            ViewData["FirstTeacherId"] = new SelectList(_context.Teacher, "Id", "FullName", course.FirstTeacherId);
+            ViewData["SecondTeacherId"] = new SelectList(_context.Teacher, "Id", "FullName", course.SecondTeacherId);
             return View(course);
         }
 
@@ -132,9 +132,9 @@ namespace FacultyMVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, CourseTeacherViewModel viewmodel)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Credits,Semester,Programme,EducationLevel,FirstTeacherId,SecondTeacherId")] Course course)
         {
-            if (id != viewmodel.Course.Id)
+            if (id != course.Id)
             {
                 return NotFound();
             }
@@ -143,16 +143,12 @@ namespace FacultyMVC.Controllers
             {
                 try
                 {
-                    _context.Update(viewmodel.Course);
+                    _context.Update(course);
                     await _context.SaveChangesAsync();
-
-                    //dopishi!!!
-                    /*IQueryable<Course> toBeRemoved = _context.Course.Where(s=> !)*/
-                    
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CourseExists(viewmodel.Course.Id))
+                    if (!CourseExists(course.Id))
                     {
                         return NotFound();
                     }
@@ -163,9 +159,9 @@ namespace FacultyMVC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["FirstTeacherId"] = new SelectList(_context.Teacher, "Id", "FirstName", viewmodel.Course.FirstTeacherId);
-            ViewData["SecondTeacherId"] = new SelectList(_context.Teacher, "Id", "FirstName", viewmodel.Course.SecondTeacherId);
-            return View(viewmodel);
+            ViewData["FirstTeacherId"] = new SelectList(_context.Teacher, "Id", "FullName", course.FirstTeacherId);
+            ViewData["SecondTeacherId"] = new SelectList(_context.Teacher, "Id", "FullName", course.SecondTeacherId);
+            return View(course);
         }
 
         // GET: Courses/Delete/5
