@@ -179,3 +179,8 @@ C:\Users\ANE\Documents\Visual Studio 2019\source\repos\FacultyMVC\bin\Debug\netc
 C:\Users\ANE\Documents\Visual Studio 2019\source\repos\FacultyMVC\bin\Debug\netcoreapp3.1\Microsoft.OData.Core.dll
 C:\Users\ANE\Documents\Visual Studio 2019\source\repos\FacultyMVC\bin\Debug\netcoreapp3.1\Microsoft.OData.Edm.dll
 C:\Users\ANE\Documents\Visual Studio 2019\source\repos\FacultyMVC\bin\Debug\netcoreapp3.1\Microsoft.Spatial.dll
+C:\Users\ANE\Documents\Visual Studio 2019\source\repos\FacultyMVC\obj\Debug\netcoreapp3.1\Razor\Views\Enrollments\Create.cshtml.g.cs
+C:\Users\ANE\Documents\Visual Studio 2019\source\repos\FacultyMVC\obj\Debug\netcoreapp3.1\Razor\Views\Enrollments\Delete.cshtml.g.cs
+C:\Users\ANE\Documents\Visual Studio 2019\source\repos\FacultyMVC\obj\Debug\netcoreapp3.1\Razor\Views\Enrollments\Details.cshtml.g.cs
+C:\Users\ANE\Documents\Visual Studio 2019\source\repos\FacultyMVC\obj\Debug\netcoreapp3.1\Razor\Views\Enrollments\Edit.cshtml.g.cs
+C:\Users\ANE\Documents\Visual Studio 2019\source\repos\FacultyMVC\obj\Debug\netcoreapp3.1\Razor\Views\Enrollments\Index.cshtml.g.cs
