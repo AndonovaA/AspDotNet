@@ -117,14 +117,25 @@ namespace FacultyMVC.Controllers
                 return NotFound();
             }
 
-            var course = await _context.Course.FindAsync(id);
+            //var course = await _context.Course.FindAsync(id);
+
+            var course = _context.Course.Where(m => m.Id == id).Include(m => m.Students).First();
+            
             if (course == null)
             {
                 return NotFound();
             }
+
+            CourseStudentViewModel vm = new CourseStudentViewModel
+            {
+                Course = course,
+                StudentsList = new MultiSelectList(_context.Student.OrderBy(s => s.FirstName), "Id", "FullName"),
+                SelectedStudents = course.Students.Select(sa => sa.StudentId) 
+            };
+
             ViewData["FirstTeacherId"] = new SelectList(_context.Teacher, "Id", "FullName", course.FirstTeacherId);
             ViewData["SecondTeacherId"] = new SelectList(_context.Teacher, "Id", "FullName", course.SecondTeacherId);
-            return View(course);
+            return View(vm);
         }
 
         // POST: Courses/Edit/5
@@ -132,9 +143,9 @@ namespace FacultyMVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Credits,Semester,Programme,EducationLevel,FirstTeacherId,SecondTeacherId")] Course course)
+        public async Task<IActionResult> Edit(int id, CourseStudentViewModel viewmodel)
         {
-            if (id != course.Id)
+            if (id != viewmodel.Course.Id)
             {
                 return NotFound();
             }
@@ -143,12 +154,23 @@ namespace FacultyMVC.Controllers
             {
                 try
                 {
-                    _context.Update(course);
+                    _context.Update(viewmodel.Course);
+                    await _context.SaveChangesAsync();
+
+                    IEnumerable<int> listStudents = viewmodel.SelectedStudents;
+                    IQueryable<Enrollment> toBeRemoved = _context.Enrollment.Where(s => !listStudents.Contains(s.StudentId) && s.CourseId == id);
+                    _context.Enrollment.RemoveRange(toBeRemoved);
+
+                    IEnumerable<int> existStudents = _context.Enrollment.Where(s=> listStudents.Contains(s.StudentId) && s.CourseId == id).Select(s=>s.StudentId);
+                    IEnumerable<int> newStudents = listStudents.Where(s => !existStudents.Contains(s));
+                    foreach (int studentId in newStudents)
+                        _context.Enrollment.Add(new Enrollment { StudentId = studentId, CourseId = id });
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CourseExists(course.Id))
+                    if (!CourseExists(viewmodel.Course.Id))
                     {
                         return NotFound();
                     }
@@ -159,9 +181,9 @@ namespace FacultyMVC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["FirstTeacherId"] = new SelectList(_context.Teacher, "Id", "FullName", course.FirstTeacherId);
-            ViewData["SecondTeacherId"] = new SelectList(_context.Teacher, "Id", "FullName", course.SecondTeacherId);
-            return View(course);
+            ViewData["FirstTeacherId"] = new SelectList(_context.Teacher, "Id", "FullName", viewmodel.Course.FirstTeacherId);
+            ViewData["SecondTeacherId"] = new SelectList(_context.Teacher, "Id", "FullName", viewmodel.Course.SecondTeacherId);
+            return View(viewmodel);
         }
 
         // GET: Courses/Delete/5
