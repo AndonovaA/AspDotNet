@@ -180,5 +180,15 @@ namespace FacultyMVC.Controllers
         {
             return _context.Teacher.Any(e => e.Id == id);
         }
+
+        // GET: Teachers/GetCourses/2
+        public async Task<IActionResult> GetCourses(int id)
+        {
+            var courses = _context.Course.Where(c=>c.FirstTeacherId == id || c.SecondTeacherId == id);
+            courses = courses.Include(t=>t.FirstTeacher).Include(t=>t.SecondTeacher);
+
+            ViewData["TeacherId"] = id;
+            return View(courses);
+        }
     }
 }

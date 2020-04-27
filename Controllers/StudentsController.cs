@@ -21,22 +21,12 @@ namespace FacultyMVC.Controllers
         }
 
         // GET: Students
-        public async Task<IActionResult> Index(string studentIndex, string searchString, string courseString)
+        public async Task<IActionResult> Index(string studentIndex, string searchString)
         {
             IQueryable<Student> students = _context.Student.AsQueryable();
             IQueryable<string> indexQuery = _context.Student.OrderBy(m => m.Index).Select(m => m.Index).Distinct();
 
             students = students.Include(s => s.Courses).ThenInclude(s => s.Course);
-
-            IQueryable<Enrollment> enrollments = _context.Enrollment.AsQueryable();
-            enrollments = enrollments.Include(e => e.Course).Include(e => e.Student);
-
-            if (!string.IsNullOrEmpty(courseString))
-            {
-                enrollments = enrollments.Where(s => s.Course.Title.Contains(courseString)); //se zemaat onie zapisi kaj koi naslovot na kursot e courseString
-                IEnumerable<int> enrollmentsIDS = enrollments.Select(e => e.StudentId).Distinct(); //se zemaat distinct IDs na studentite od prethodno najdenite zapisi
-                students = students.Where(s => enrollmentsIDS.Contains(s.Id));  //filtriranje na students spored id
-            }
 
             if (!string.IsNullOrEmpty(studentIndex))
             {
@@ -182,6 +172,23 @@ namespace FacultyMVC.Controllers
         private bool StudentExists(int id)
         {
             return _context.Student.Any(e => e.Id == id);
+        }
+
+        // GET: Students/MyCourses/2
+        public async Task<IActionResult> MyCourses(int? id)
+        {
+            IQueryable<Course> courses = _context.Course.Include(c => c.FirstTeacher).Include(c => c.SecondTeacher).AsQueryable();
+
+            IQueryable<Enrollment> enrollments = _context.Enrollment.AsQueryable();
+            enrollments = enrollments.Where(s => s.StudentId==id); //se zemaat onie zapisi kaj koi studentId == id-to od url-to
+            IEnumerable<int> enrollmentsIDS = enrollments.Select(e => e.CourseId).Distinct(); //se zemaat distinct IDs na courses od prethodno najdenite zapisi
+
+            courses = courses.Where(s => enrollmentsIDS.Contains(s.Id));  //filtriranje na students spored id
+
+            courses = courses.Include(c => c.Students).ThenInclude(c => c.Student);
+
+            ViewData["studentId"] = id;
+            return View(courses);
         }
     }
 }

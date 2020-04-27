@@ -1,0 +1,81 @@
+﻿@model FacultyMVC.ViewModels.EnrollmentViewModel
+
+
+<h1>Upsert</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+
+        <form asp-action="Upsert">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <!--proveri dali ti treba ova:-->
+            <div class="form-group">
+                <input asp-for="NewEnrollment.CourseId" value="@ViewData["chosenId"]" class="form-control" readonly type="hidden" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="NewEnrollment.Semester" class="control-label"></label>
+                <input asp-for="NewEnrollment.Semester" value=" " class="form-control" />
+                <span asp-validation-for="NewEnrollment.Semester" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NewEnrollment.Year" class="control-label"></label>
+                <input asp-for="NewEnrollment.Year" value=" " class="form-control" />
+                <span asp-validation-for="NewEnrollment.Year" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Students</label>
+                <select asp-for="SelectedStudents" class="form-control js-example-basic-multiple" asp-items="Model.StudentsList"></select>
+                <span asp-validation-for="SelectedStudents" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input asp-for="NewEnrollment.Grade" class="form-control" readonly type="hidden" />
+                <span asp-validation-for="NewEnrollment.Grade" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input asp-for="NewEnrollment.SeminalUrl" class="form-control" readonly type="hidden" />
+                <span asp-validation-for="NewEnrollment.SeminalUrl" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input asp-for="NewEnrollment.ProjectUrl" class="form-control" readonly type="hidden" />
+                <span asp-validation-for="NewEnrollment.ProjectUrl" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input asp-for="NewEnrollment.ExamPoints" class="form-control" readonly type="hidden" />
+                <span asp-validation-for="NewEnrollment.ExamPoints" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input asp-for="NewEnrollment.SeminalPoints" class="form-control" readonly type="hidden" />
+                <span asp-validation-for="NewEnrollment.SeminalPoints" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input asp-for="NewEnrollment.ProjectPoints" class="form-control" readonly type="hidden" />
+                <span asp-validation-for="NewEnrollment.ProjectPoints" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input asp-for="NewEnrollment.AdditionalPoints" class="form-control" readonly type="hidden" />
+                <span asp-validation-for="NewEnrollment.AdditionalPoints" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NewEnrollment.FinishDate" class="control-label"></label>
+                <span asp-validation-for="NewEnrollment.FinishDate" class="text-danger">Enter only for writting off students</span>
+                <input asp-for="NewEnrollment.FinishDate" class="form-control" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Upsert" class="btn btn-primary" />
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to Courses</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

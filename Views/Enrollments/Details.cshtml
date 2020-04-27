@@ -1,100 +1,87 @@
-﻿@model IEnumerable<FacultyMVC.Models.Enrollment>
+﻿@model FacultyMVC.Models.Enrollment
 
-
- <h1 >Details</h1>
-
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Student.Index)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Student.FullName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Semester)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Year)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Grade)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SeminalUrl)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProjectUrl)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ExamPoints)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SeminalPoints)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProjectPoints)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AdditionalPoints)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FinishDate)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Student.Index)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Student.FullName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Semester)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Year)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Grade)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SeminalUrl)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProjectUrl)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ExamPoints)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SeminalPoints)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProjectPoints)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AdditionalPoints)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FinishDate)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>   |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
-            </td>
-        </tr>
-        }
-    </tbody>
-</table>
+<h1>Details</h1>
 
 <div>
-    <a asp-action="Index">Back to Courses</a>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Course)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Course.Title)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Student)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Student.FullName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Semester)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Semester)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Year)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Year)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Grade)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Grade)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.SeminalUrl)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.SeminalUrl)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ProjectUrl)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ProjectUrl)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ExamPoints)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ExamPoints)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.SeminalPoints)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.SeminalPoints)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ProjectPoints)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ProjectPoints)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.AdditionalPoints)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.AdditionalPoints)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.FinishDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.FinishDate)
+        </dd>
+    </dl>
+
+    <div>
+        <a asp-controller="Students" asp-action="MyCourses" asp-route-id="@Model.StudentId">Back to List</a>
+    </div>
+        
+
 </div>

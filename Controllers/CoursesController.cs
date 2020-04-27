@@ -21,7 +21,7 @@ namespace FacultyMVC.Controllers
         }
 
         // GET: Courses
-        public async Task<IActionResult> Index(int courseSemester, string courseProgramme, string searchString, string teacherString)
+        public async Task<IActionResult> Index(int courseSemester, string courseProgramme, string searchString/*, string teacherString*/)
         {
             IQueryable<Course> courses = _context.Course.AsQueryable(); //lista od queries za sekoj course
             IQueryable<int> semesterQuery= _context.Course.OrderBy(m => m.Semester).Select(m => m.Semester).Distinct(); //lista od queries za site mozni semestri
@@ -36,27 +36,31 @@ namespace FacultyMVC.Controllers
             courses = courses.Include(m => m.FirstTeacher)
                 .Include(m => m.SecondTeacher);
 
-            IEnumerable<Course> dataList = courses as IEnumerable<Course>;
+           /* IEnumerable<Course> dataList = courses as IEnumerable<Course>;
 
             if (!string.IsNullOrEmpty(teacherString))
             {
                 dataList = dataList.Where(s => s.FirstTeacher.FullName.ToLower().Contains(teacherString.ToLower()) || s.SecondTeacher.FullName.ToLower().Contains(teacherString.ToLower())); 
-            }
+            }*/
+
             if (courseSemester != 0) 
             {
-                dataList = dataList.Where(x => x.Semester == courseSemester);
+                /*dataList = dataList.Where(x => x.Semester == courseSemester);*/
+                courses = courses.Where(x => x.Semester == courseSemester);
             }
             if (!string.IsNullOrEmpty(courseProgramme))
             {
-                dataList = dataList.Where(x => x.Programme == courseProgramme);
+                /*dataList = dataList.Where(x => x.Programme == courseProgramme);*/
+                courses = courses.Where(x => x.Programme == courseProgramme);
             }
 
 
             var courseViewModel = new CourseFilterViewModel
             {
                 Semesters = new SelectList(await semesterQuery.ToListAsync()), //dobivanje lista od semesters
-                Programmes = new SelectList(await programmeQuery.ToListAsync()), 
-                Courses = dataList.ToList() //dobivanje lista
+                Programmes = new SelectList(await programmeQuery.ToListAsync()),
+                /*Courses = dataList.ToList() //dobivanje lista*/
+                Courses = await courses.ToListAsync()
             };
        
             return View(courseViewModel);
@@ -216,6 +220,61 @@ namespace FacultyMVC.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+        // GET: Courses/Upsert/3
+        public async Task<IActionResult> Upsert(int? id)
+        {
+            var course = _context.Course.Where(m => m.Id == id).Include(m => m.Students).First();
+
+            EnrollmentViewModel vm = new EnrollmentViewModel
+            {
+                StudentsList = new MultiSelectList(_context.Student.OrderBy(s => s.FirstName), "Id", "FullName"),
+                SelectedStudents = course.Students.Select(sa => sa.StudentId)
+            };
+
+            ViewData["chosenId"] = id;
+            return View(vm);
+        }
+
+        // POST: Courses/Upsert/3
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Upsert(int id, EnrollmentViewModel viewmodel)
+        { 
+            if (id != viewmodel.NewEnrollment.CourseId)
+            {
+                return NotFound();
+            }
+
+            //Insert (enroll students)
+            if (viewmodel.NewEnrollment.FinishDate == null)
+            {
+                IEnumerable<int> listStudents = viewmodel.SelectedStudents;
+                IEnumerable<int> existStudents = _context.Enrollment.Where(s => listStudents.Contains(s.StudentId) && s.CourseId == id).Select(s => s.StudentId);
+                IEnumerable<int> newStudents = listStudents.Where(s => !existStudents.Contains(s));
+
+                foreach (int studentId in newStudents)
+                    _context.Enrollment.Add(new Enrollment { StudentId = studentId, CourseId = id, Year = viewmodel.NewEnrollment.Year, Semester = viewmodel.NewEnrollment.Semester });
+
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                //Update enrollments (write off students) 
+                var enrollments = _context.Enrollment.Where(e => e.CourseId == id).Include(e => e.Course).Include(e => e.Student);
+
+                foreach (Enrollment e in enrollments) {
+                    e.FinishDate = viewmodel.NewEnrollment.FinishDate;
+                }
+
+                _context.Enrollment.UpdateRange(enrollments);
+                await _context.SaveChangesAsync();
+
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
 
         private bool CourseExists(int id)
         {

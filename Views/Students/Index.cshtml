@@ -11,7 +11,6 @@
             <option value="">INDEXES</option>
         </select>
         Full Name: <input type="text" asp-for="SearchString" />
-        Course: <input type="text" asp-for="CourseString" />
         <input type="submit" value="Filter" />
     </p>
 </form>
@@ -70,7 +69,9 @@
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
+                <a asp-action="MyCourses" asp-route-id="@item.Id">View Courses</a>
+
             </td>
         </tr>
 }

@@ -1,58 +1,55 @@
 ﻿@model FacultyMVC.Models.Enrollment
 
 
-<h1>Edit</h1>
+<h1>EditByStudent</h1>
 
 <h4>Enrollment</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="EditByStudent">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <input asp-for="Semester" class="form-control" type="hidden"/>
+                <input asp-for="Semester" class="form-control" type="hidden" />
                 <span asp-validation-for="Semester" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input asp-for="Year" class="form-control" type="hidden"/>
+                <input asp-for="Year" class="form-control" type="hidden" />
                 <span asp-validation-for="Year" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input asp-for="Grade" class="form-control" type="hidden"/>
+                <input asp-for="Grade" class="form-control" type="hidden" />
                 <span asp-validation-for="Grade" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input asp-for="SeminalUrl" class="form-control" type="hidden"/>
+                <label asp-for="SeminalUrl" class="control-label"></label>
+                <input asp-for="SeminalUrl" class="form-control" />
                 <span asp-validation-for="SeminalUrl" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input asp-for="ProjectUrl" class="form-control" type="hidden"/>
+                <label asp-for="ProjectUrl" class="control-label"></label>
+                <input asp-for="ProjectUrl" class="form-control" />
                 <span asp-validation-for="ProjectUrl" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ExamPoints" class="control-label"></label>
-                <input asp-for="ExamPoints" class="form-control" />
+                <input asp-for="ExamPoints" class="form-control"  type="hidden" />
                 <span asp-validation-for="ExamPoints" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="SeminalPoints" class="control-label"></label>
-                <input asp-for="SeminalPoints" class="form-control" />
+                <input asp-for="SeminalPoints" class="form-control"  type="hidden" />
                 <span asp-validation-for="SeminalPoints" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ProjectPoints" class="control-label"></label>
-                <input asp-for="ProjectPoints" class="form-control" />
+                <input asp-for="ProjectPoints" class="form-control"  type="hidden" />
                 <span asp-validation-for="ProjectPoints" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="AdditionalPoints" class="control-label"></label>
-                <input asp-for="AdditionalPoints" class="form-control" />
+                <input asp-for="AdditionalPoints" class="form-control"  type="hidden" />
                 <span asp-validation-for="AdditionalPoints" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="FinishDate" class="control-label"></label>
-                <input asp-for="FinishDate" class="form-control"/>
+                <input asp-for="FinishDate" class="form-control" type="hidden" />
                 <span asp-validation-for="FinishDate" class="text-danger"></span>
             </div>
             <div class="form-group" hidden>
@@ -69,9 +66,10 @@
 </div>
 
 <div>
-    <a asp-action="CourseStudents" asp-route-id="@Model.CourseId">Back to List</a>
+    <a asp-controller="Students" asp-action="MyCourses" asp-route-id="@Model.StudentId">Back to List</a>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
