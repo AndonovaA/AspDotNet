@@ -8,16 +8,20 @@ using Microsoft.EntityFrameworkCore;
 using FacultyMVC.Data;
 using FacultyMVC.Models;
 using FacultyMVC.ViewModels;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
 
 namespace FacultyMVC.Controllers
 {
     public class EnrollmentsController : Controller
     {
         private readonly FacultyMVCContext _context;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public EnrollmentsController(FacultyMVCContext context)
+        public EnrollmentsController(FacultyMVCContext context, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         // GET: Enrollments
@@ -218,7 +222,23 @@ namespace FacultyMVC.Controllers
             }
             ViewData["CourseId"] = new SelectList(_context.Course, "Id", "Title", enrollment.CourseId);
             ViewData["StudentId"] = new SelectList(_context.Student, "Id", "FullName", enrollment.StudentId);
-            return View(enrollment);
+            EnrollmentFormViewModel vm = new EnrollmentFormViewModel
+            {
+                Id = enrollment.Id,
+                Semester = enrollment.Semester,
+                Year = enrollment.Year,
+                Grade = enrollment.Grade,
+                ProjectUrl = enrollment.ProjectUrl,
+                SeminalPoints = enrollment.SeminalPoints,
+                ProjectPoints = enrollment.ProjectPoints,
+                AdditionalPoints = enrollment.AdditionalPoints,
+                ExamPoints = enrollment.ExamPoints,
+                FinishDate = enrollment.FinishDate,
+                CourseId = enrollment.CourseId,
+                StudentId = enrollment.StudentId
+            };
+
+            return View(vm);
         }
 
         // POST: Enrollments/EditByStudent/5
@@ -226,9 +246,9 @@ namespace FacultyMVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditByStudent(int id, [Bind("Id,Semester,Year,Grade,SeminalUrl,ProjectUrl,ExamPoints,SeminalPoints,ProjectPoints,AdditionalPoints,FinishDate,CourseId,StudentId")] Enrollment enrollment)
-        {
-            if (id != enrollment.Id) 
+        public async Task<IActionResult> EditByStudent(int id, EnrollmentFormViewModel vm)
+        { 
+            if (id != vm.Id) 
             {
                 return NotFound();
             }
@@ -237,12 +257,31 @@ namespace FacultyMVC.Controllers
             {
                 try
                 {
+                    string uniqueFileName = UploadedFile(vm);
+
+                    Enrollment enrollment= new Enrollment
+                    {
+                        Id=vm.Id,
+                        Semester= vm.Semester,
+                        Year= vm.Year,
+                        Grade= vm.Grade,
+                        SeminalUrl = uniqueFileName,
+                        ProjectUrl = vm.ProjectUrl,
+                        SeminalPoints=vm.SeminalPoints,
+                        ProjectPoints=vm.ProjectPoints,
+                        AdditionalPoints=vm.AdditionalPoints,
+                        ExamPoints=vm.ExamPoints,
+                        FinishDate=vm.FinishDate,
+                        CourseId=vm.CourseId,
+                        StudentId=vm.StudentId
+                    };
+
                     _context.Update(enrollment);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!EnrollmentExists(enrollment.Id))
+                    if (!EnrollmentExists(vm.Id))
                     {
                         return NotFound();
                     }
@@ -251,12 +290,30 @@ namespace FacultyMVC.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("Details", new { id = enrollment.Id });
+                return RedirectToAction("Details", new { id = vm.Id });
             }
-            ViewData["CourseId"] = new SelectList(_context.Course, "Id", "Title", enrollment.CourseId);
-            ViewData["StudentId"] = new SelectList(_context.Student, "Id", "FullName", enrollment.StudentId);
-            return View(enrollment);
+            ViewData["CourseId"] = new SelectList(_context.Course, "Id", "Title", vm.CourseId);
+            ViewData["StudentId"] = new SelectList(_context.Student, "Id", "FullName", vm.StudentId);
+            return View(vm);
         }
+
+        private string UploadedFile(EnrollmentFormViewModel model)
+        {
+            string uniqueFileName = null;
+
+            if (model.SeminalUrl != null)
+            {
+                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "seminalFiles");
+                uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(model.SeminalUrl.FileName);
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    model.SeminalUrl.CopyTo(fileStream);
+                }
+            }
+            return uniqueFileName;
+        }
+
 
         private bool EnrollmentExists(int id)
         {

@@ -17,7 +17,6 @@ namespace FacultyMVC.Models
 
        public int? Grade { get; set; }
 
-       [StringLength(255)]
        public string SeminalUrl { get; set; }
 
        [StringLength(255)]
