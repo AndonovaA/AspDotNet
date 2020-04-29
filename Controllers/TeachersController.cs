@@ -8,16 +8,20 @@ using Microsoft.EntityFrameworkCore;
 using FacultyMVC.Data;
 using FacultyMVC.Models;
 using FacultyMVC.ViewModels;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
 
 namespace FacultyMVC.Controllers
 {
     public class TeachersController : Controller
     {
         private readonly FacultyMVCContext _context;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public TeachersController(FacultyMVCContext context)
+        public TeachersController(FacultyMVCContext context, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
+            _webHostEnvironment = webHostEnvironment;
         }
 
 
@@ -85,15 +89,47 @@ namespace FacultyMVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,Degree,AcademicRank,OfficeNumber,HireDate")] Teacher teacher)
+        public async Task<IActionResult> Create(TeacherFormViewModel model)
         {
             if (ModelState.IsValid)
             {
+                string uniqueFileName = UploadedFile(model);
+
+                Teacher teacher = new Teacher
+                {
+                    
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Degree = model.Degree,
+                    AcademicRank = model.AcademicRank,
+                    OfficeNumber = model.OfficeNumber,
+                    HireDate = model.HireDate,
+                    ProfilePicture = uniqueFileName,
+                    Courses_first = model.Courses_first,
+                    Courses_second = model.Courses_second
+                };
+
                 _context.Add(teacher);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(teacher);
+            return View();
+        }
+        private string UploadedFile(TeacherFormViewModel model)
+        {
+            string uniqueFileName = null;
+
+            if (model.ProfilePicture != null)
+            {
+                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
+                uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(model.ProfilePicture.FileName);
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    model.ProfilePicture.CopyTo(fileStream);
+                }
+            }
+            return uniqueFileName;
         }
 
         // GET: Teachers/Edit/5
@@ -109,7 +145,21 @@ namespace FacultyMVC.Controllers
             {
                 return NotFound();
             }
-            return View(teacher);
+
+            TeacherFormViewModel vm = new TeacherFormViewModel
+            {
+                Id = teacher.Id,
+                FirstName = teacher.FirstName,
+                LastName = teacher.LastName,
+                Degree = teacher.Degree,
+                AcademicRank = teacher.AcademicRank,
+                OfficeNumber = teacher.OfficeNumber,
+                HireDate = teacher.HireDate,
+                Courses_first = teacher.Courses_first,
+                Courses_second = teacher.Courses_second
+            };
+
+            return View(vm);
         }
 
         // POST: Teachers/Edit/5
@@ -117,9 +167,9 @@ namespace FacultyMVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,FirstName,LastName,Degree,AcademicRank,OfficeNumber,HireDate")] Teacher teacher)
+        public async Task<IActionResult> Edit(int id, TeacherFormViewModel vm)
         {
-            if (id != teacher.Id)
+            if (id != vm.Id)
             {
                 return NotFound();
             }
@@ -128,12 +178,28 @@ namespace FacultyMVC.Controllers
             {
                 try
                 {
+                    string uniqueFileName = UploadedFile(vm);
+
+                    Teacher teacher = new Teacher
+                    {
+                        Id = vm.Id,
+                        FirstName = vm.FirstName,
+                        LastName = vm.LastName,
+                        ProfilePicture = uniqueFileName,
+                        Degree = vm.Degree,
+                        AcademicRank = vm.AcademicRank,
+                        OfficeNumber = vm.OfficeNumber,
+                        HireDate = vm.HireDate,
+                        Courses_first = vm.Courses_first,
+                        Courses_second = vm.Courses_second
+                    };
+
                     _context.Update(teacher);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!TeacherExists(teacher.Id))
+                    if (!TeacherExists(vm.Id))
                     {
                         return NotFound();
                     }
@@ -144,7 +210,7 @@ namespace FacultyMVC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(teacher);
+            return View(vm);
         }
 
         // GET: Teachers/Delete/5

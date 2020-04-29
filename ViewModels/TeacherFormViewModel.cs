@@ -1,13 +1,14 @@
-﻿using System;
+﻿using FacultyMVC.Models;
+using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FacultyMVC.Models
+namespace FacultyMVC.ViewModels
 {
-    public class Teacher
+    public class TeacherFormViewModel
     {
         public int Id { get; set; }
 
@@ -31,12 +32,13 @@ namespace FacultyMVC.Models
         [DataType(DataType.Date)]
         public DateTime? HireDate { get; set; }
 
-        public string ProfilePicture { get; set; }
+        public IFormFile ProfilePicture { get; set; }
 
-        public string FullName {
+        public string FullName
+        {
             //get { return string.Format("{0}, {1}", FirstName, LastName);}
             get { return FirstName + " " + LastName; }
-            
+
         }
 
         public ICollection<Course> Courses_first { get; set; }

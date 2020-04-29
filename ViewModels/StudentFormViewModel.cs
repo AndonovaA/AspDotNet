@@ -1,12 +1,14 @@
-﻿using System;
+﻿using FacultyMVC.Models;
+using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FacultyMVC.Models
+namespace FacultyMVC.ViewModels
 {
-    public class Student
+    public class StudentFormViewModel
     {
         public int Id { get; set; }
 
@@ -29,7 +31,7 @@ namespace FacultyMVC.Models
 
         public int? CurrentSemestar { get; set; }
 
-        public string ProfilePicture { get; set; }
+        public IFormFile ProfilePicture { get; set; }
 
         public string FullName
         {

@@ -1,47 +1,55 @@
-﻿@model FacultyMVC.Models.Student
+﻿@model FacultyMVC.ViewModels.StudentFormViewModel
 
 <h1>Create</h1>
-
 <h4>Student</h4>
+
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" enctype="multipart/form-data" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Index" class="control-label"></label>
-                <input asp-for="Index" class="form-control" />
-                <span asp-validation-for="Index" class="text-danger"></span>
+                <label asp-for=" ProfilePicture" class="control-label"></label>
+                <div class="custom-file">
+                    <input asp-for=" ProfilePicture" type="file" class="custom-file-input" id="customFile">
+                    <label class="custom-file-label" for="customFile">Choose image file</label>
+                </div>
+                <span asp-validation-for=" ProfilePicture" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="FirstName" class="control-label"></label>
-                <input asp-for="FirstName" class="form-control" />
-                <span asp-validation-for="FirstName" class="text-danger"></span>
+                <label asp-for=" Index" class="control-label"></label>
+                <input asp-for=" Index" class="form-control" />
+                <span asp-validation-for=" Index" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="LastName" class="control-label"></label>
-                <input asp-for="LastName" class="form-control" />
-                <span asp-validation-for="LastName" class="text-danger"></span>
+                <label asp-for=" FirstName" class="control-label"></label>
+                <input asp-for=" FirstName" class="form-control" />
+                <span asp-validation-for=" FirstName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="EnrollmentDate" class="control-label"></label>
-                <input asp-for="EnrollmentDate" class="form-control" />
-                <span asp-validation-for="EnrollmentDate" class="text-danger"></span>
+                <label asp-for=" LastName" class="control-label"></label>
+                <input asp-for=" LastName" class="form-control" />
+                <span asp-validation-for=" LastName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="AcquiredCredits" class="control-label"></label>
-                <input asp-for="AcquiredCredits" class="form-control" />
-                <span asp-validation-for="AcquiredCredits" class="text-danger"></span>
+                <label asp-for=" EnrollmentDate" class="control-label"></label>
+                <input asp-for=" EnrollmentDate" class="form-control" />
+                <span asp-validation-for=" EnrollmentDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CurrentSemestar" class="control-label"></label>
-                <input asp-for="CurrentSemestar" class="form-control" />
-                <span asp-validation-for="CurrentSemestar" class="text-danger"></span>
+                <label asp-for=" AcquiredCredits" class="control-label"></label>
+                <input asp-for=" AcquiredCredits" class="form-control" />
+                <span asp-validation-for=" AcquiredCredits" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="EducationLevel" class="control-label"></label>
-                <input asp-for="EducationLevel" class="form-control" />
-                <span asp-validation-for="EducationLevel" class="text-danger"></span>
+                <label asp-for=" CurrentSemestar" class="control-label"></label>
+                <input asp-for=" CurrentSemestar" class="form-control" />
+                <span asp-validation-for=" CurrentSemestar" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for=" EducationLevel" class="control-label"></label>
+                <input asp-for=" EducationLevel" class="form-control" />
+                <span asp-validation-for=" EducationLevel" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
@@ -56,4 +64,13 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+
+        // Add the following code if you want the name of the file appear on select
+        $(".custom-file-input").on("change", function () {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
+    </script>
 }

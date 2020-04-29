@@ -1,4 +1,4 @@
-﻿using FacultyMVC.Models;
+﻿/*using FacultyMVC.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
@@ -14,3 +14,8 @@ namespace FacultyMVC.ViewModels
         public IEnumerable<SelectListItem> StudentsList { get; set; }
     }
 }
+*/
+
+
+
+//FAZA1

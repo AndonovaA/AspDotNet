@@ -27,11 +27,7 @@ namespace FacultyMVC.Controllers
         // GET: Enrollments
         public async Task<IActionResult> Index()
         {
-            /* var facultyMVCContext = _context.Enrollment.Include(e => e.Course).Include(e => e.Student);
-             return View(await facultyMVCContext.ToListAsync());*/
-
-            IQueryable<Course> facultyMVCContext = _context.Course.OrderBy(m => m.Semester).AsQueryable();
-            
+            var facultyMVCContext = _context.Enrollment.Include(e => e.Course).Include(e => e.Student);
             return View(await facultyMVCContext.ToListAsync());
         }
 
@@ -54,50 +50,30 @@ namespace FacultyMVC.Controllers
             return View(await enrollment.ToListAsync());
         }
 
-        // GET: Enrollments/Create/3
-        public IActionResult Create(int? id)
+        // GET: Enrollments/Create
+        public IActionResult Create()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-            var enrollments = _context.Enrollment.Where(e=>e.CourseId==id).Include(e => e.Course).Include(e => e.Student);
-            var course = _context.Course.Where(m => m.Id == id).Include(m => m.Students).First();
-
-            EnrollmentViewModel vm = new EnrollmentViewModel
-            {
-                StudentsList = new MultiSelectList(_context.Student.OrderBy(s => s.FirstName), "Id", "FullName"),
-                SelectedStudents = course.Students.Select(sa => sa.StudentId)
-            };
-
-            ViewData["chosenId"] = id;
-            /*ViewData["StudentId"] = new SelectList(_context.Student, "Id", "FullName");*/
-            return View(vm);
+            ViewData["CourseId"] = new SelectList(_context.Course, "Id", "Title");
+            ViewData["StudentId"] = new SelectList(_context.Student, "Id", "FirstName");
+            return View();
         }
 
         // POST: Enrollments/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int id, EnrollmentViewModel viewmodel)
+        public async Task<IActionResult> Create([Bind("Id,Semester,Year,Grade,SeminalUrl,ProjectUrl,ExamPoints,SeminalPoints,ProjectPoints,AdditionalPoints,FinishDate,CourseId,StudentId")] Enrollment enrollment)
         {
-            if (id != viewmodel.NewEnrollment.CourseId)
+            if (ModelState.IsValid)
             {
-                return NotFound();
+                _context.Add(enrollment);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-
-            IEnumerable<int> listStudents = viewmodel.SelectedStudents;
-            IQueryable<Enrollment> toBeRemoved = _context.Enrollment.Where(s => !listStudents.Contains(s.StudentId) && s.CourseId == id);
-            _context.Enrollment.RemoveRange(toBeRemoved);
-
-            IEnumerable<int> existStudents = _context.Enrollment.Where(s => listStudents.Contains(s.StudentId) && s.CourseId == id).Select(s => s.StudentId);
-            IEnumerable<int> newStudents = listStudents.Where(s => !existStudents.Contains(s));
-            foreach (int studentId in newStudents)
-                _context.Enrollment.Add(new Enrollment { StudentId = studentId, CourseId = id, Year = viewmodel.NewEnrollment.Year, Semester = viewmodel.NewEnrollment.Semester });
-
-            await _context.SaveChangesAsync();
-
-            ViewData["CourseId"] = new SelectList(_context.Course, "Id", "Title", viewmodel.NewEnrollment.CourseId);
-            return RedirectPermanent("~/Courses/Index");
+            ViewData["CourseId"] = new SelectList(_context.Course, "Id", "Title", enrollment.CourseId);
+            ViewData["StudentId"] = new SelectList(_context.Student, "Id", "FirstName", enrollment.StudentId);
+            return View(enrollment);
         }
 
         // GET: Enrollments/Edit/5

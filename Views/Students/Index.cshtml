@@ -19,6 +19,8 @@
     <thead>
         <tr>
             <th>
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Students[0].Index)
             </th>
             <th>
@@ -45,6 +47,14 @@
     <tbody>
 @foreach (var item in Model.Students) {
         <tr>
+            <td>
+                @{ if (item.ProfilePicture != null){
+                <img src="~/images/@item.ProfilePicture"
+                 class="rounded-circle"
+                     height="40" width="40"
+                     asp-append-version="true"/>}
+                }
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Index)
             </td>
